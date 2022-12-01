@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Музыка{% endblock %}
+
+{% block content %}
+    {% if messages %}
+        {% for message in messages %}
+         {% if message.tags %}  <script>alert("{{ message }}")</script> {% endif %}
+
+        {% endfor %}
+
+    {% endif %}
+  <br><a href="{% url 'model_form_upload' %}" style="font-size: 20px">Загрузить файл</a>
+
+  <p style="font-size:20px;">Загруженные файлы:</p>
+  <ul>
+      {% for object in objects %}
+      <br><li>
+      <a href="{% url 'object' object.object_name %}">{{ object.object_name}}</a>
+        <br><a>Размер файла: {{ object.size }} байт</a>
+        <br><a>Дата последнего изменения: {{ object.last_modified }}</a>
+            <form action="{% url 'delete' object.object_name%}" method="post">
+                {% csrf_token %}
+                <button type="submit" name='delete_object' value={{object.object_name}}>Удалить.</button>
+            </form>
+
+            <form action="{% url 'model_form_edit' object.object_name%}" method="post">
+                {% csrf_token %}
+                 <button type="submit">Редактировать</button>
+            </form>
+        </li>
+      {% empty %}
+        <li>Список пуст</li>
+    {% endfor %}
+  </ul>
+    <a href="{% url 'start' %}"> <button style="font-size:20px;"> Выйти </button> </a>
+
+{% endblock %}

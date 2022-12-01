@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Музыка{% endblock %}
+
+{% block content %}
+    <form class="form-signin"  method='POST'  action="{% url 'home' %}">
+          {% csrf_token %}
+          <label for="username">Логин</label>
+          <input type="text" name="access" placeholder="username" class="form-styling">
+          <label for="password">Пароль</label>
+          <input type="password" name="secret" placeholder="password" class="form-styling">
+          <button type="submit"  value='log_in' >Войти</button>
+    </form>
+
+{% endblock %}

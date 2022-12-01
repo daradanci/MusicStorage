@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Музыка{% endblock %}
+
+
+{% block content %}
+    <a style="font-size:20px;">Изменение файла {{ name }}</a>
+
+  <br><form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+{#    {{ form.as_p }}#}
+    <input type="file" id="filepicker" name="fileList" multiple />
+    <output id="output"></output>
+    <button type="submit">Изменить</button>
+
+  </form>
+
+{#  <p><a href="{% url 'home' %}">На главную</a></p>#}
+    <input type="button" onclick="history.back();" value="Назад"/>
+<script>
+function getCookie(c_name)
+{
+    if (document.cookie.length > 0)
+    {
+        c_start = document.cookie.indexOf(c_name + "=");
+        if (c_start != -1)
+        {
+            c_start = c_start + c_name.length + 1;
+            c_end = document.cookie.indexOf(";", c_start);
+            if (c_end == -1) c_end = document.cookie.length;
+            return unescape(document.cookie.substring(c_start,c_end));
+        }
+    }
+    return "";
+ }
+
+const output = document.getElementById('output');
+const filepicker = document.getElementById('filepicker');
+
+filepicker.addEventListener('change', (event) => {
+  const files = event.target.files;
+  const now = new Date();
+  output.textContent = '';
+
+  for (const file of files) {
+    const date = new Date(file.lastModified);
+      console.log(date)
+      console.log(file.lastModified)
+      console.log(typeof (file.lastModified))
+
+      {#$.ajax({#}
+      {#    type:'POST',#}
+      {#    url:'http://127.0.0.1:8000/data_update/',#}
+      {#    data:{#}
+      {#        'date': date,#}
+      {#    },#}
+      {#    success: function (response){#}
+      {#        console.log('success')#}
+      {#        console.log(date)#}
+      {#    },#}
+      {#    error: function (response){#}
+      {#        console.log('error')#}
+      {#    }})#}
+
+      let xhr = new XMLHttpRequest();
+      xhr.open("POST", `http://127.0.0.1:8000/data_update/?newdate=${file.lastModified}`);
+      {#xhr.setRequestHeader("Accept", "application/json");#}
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.setRequestHeader("X-CSRFToken",  getCookie("csrftoken"));
+      {#let data = `{"date": ${file.lastModified}}`;#}
+      let data = `${file.lastModified}`;
+
+      xhr.send(data);
+    // true if the file hasn't been modified for more than 1 year
+    const stale = now.getTime() - file.lastModified > 31_536_000_000;
+    output.textContent += `${file.name} is ${stale ? 'stale' : 'fresh'} (${date}).\n`;
+
+  }
+});
+
+</script>
+{% endblock %}

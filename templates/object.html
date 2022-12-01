@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Музыка{% endblock %}
+
+{% block content %}
+    <br><a>Имя файла: {{ object_name }}</a>
+    <br><a>Размер файла: {{ object_info.size }} байт</a>
+    <br><a>Дата последнего изменения: {{ object_info.last_modified }}</a>
+{#    <div>#}
+{#        {{ object }}#}
+{#    </div>#}
+      {% with 'music/'|add:object_name as fp_static %}
+      <br><audio controls="controls" preload="none" src="{% static fp_static %}" type='audio/mpeg'>
+       Your browser does not support the audio element.
+      </audio>
+          <div>
+          <a href="/download/{{object_name}}" style="text-decoration:None">--->Скачать!<---</a>
+          </div>
+      {% endwith %}
+
+    <br>
+    <form action="{% url 'delete' object_name%}" method="post">
+    {% csrf_token %}
+     <button type="submit" name='delete_object' value={{object_name}}>Удалить.</button>
+     </form>
+
+    <form action="{% url 'model_form_edit' object_name%}" method="post">
+    {% csrf_token %}
+     <button type="submit">Редактировать</button>
+     </form>
+
+    <input type="button" onclick="history.back();" value="Назад"/>
+
+{% endblock %}
